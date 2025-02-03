@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ext-language_tools.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #editor { width: 600px; height: 300px; margin: auto; }
+        pre { background: #f4f4f4; padding: 10px; width: 600px; margin: auto; text-align: left; }
+    </style>
+</head>
+<body>
+    <h2>オンラインコード実行環境</h2>
+    <div id="editor"></div>
+    <button onclick="submitCode()">Run Code</button>
+    <pre id="output"></pre>
+
+    <script>
+        const editor = ace.edit("editor");
+        editor.$blockScrolling = Infinity;
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: true
+        });
+        editor.setTheme("ace/theme/monokai");
+        editor.getSession().setMode("ace/mode/python");
+
+        async function submitCode() {
+            const code = editor.getValue();
+            const response = await fetch('/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code })
+            });
+            const result = await response.text();
+            document.getElementById('output').innerText = result;
+        }
+    </script>
+</body>
+</html>
