@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: code-executor-job-  # 一意な名前を自動生成
+spec:
+  template:
+    spec:
+      containers:
+      - name: code-runner
+        image: python:3.9-alpine
+        command: ["/bin/sh", "-c"]
+        args:
+          - "echo 'print(\"Hello\")' > script.py && python script.py"
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "256Mi"
+      restartPolicy: Never
+  backoffLimit: 1  # 失敗時のリトライ回数
+  activeDeadlineSeconds: 30  # 最大30秒で強制終了
